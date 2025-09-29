@@ -68,25 +68,7 @@ h2 {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-.close-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    font-size: 20px;
-    line-height: 1;
-    cursor: pointer;
-    transition: background 0.2s ease;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+
 
 .close-button:hover {
     background: rgba(255, 255, 255, 0.2);
