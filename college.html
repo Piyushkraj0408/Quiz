@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>College Subject</title>
+<link rel="stylesheet" href="style.css">
+<style>
+    .subject-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 25px;
+    }
+
+    .subject-buttons button {
+        padding: 20px 25px;
+        font-size: 17px;
+        font-weight: 500;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        cursor: pointer;
+        transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        margin: 0;
+        text-align: left;
+    }
+
+    .subject-buttons button:hover {
+        transform: translateY(-3px);
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Select Subject</h2>
+  <div class="subject-buttons">
+      <button onclick="startQuiz('18', 'medium')">Computer Science</button>
+      <button onclick="startQuiz('19', 'hard')">Mathematics</button>
+      <button onclick="startQuiz('21', 'medium')">Sports</button>
+  </div>
+</div>
+<script>
+function startQuiz(categoryId, difficulty) {
+    localStorage.setItem("apiCategory", categoryId);
+    localStorage.setItem("apiDifficulty", difficulty);
+    window.location.href = "quiz.html";
+}
+</script>
+</body>
+</html>

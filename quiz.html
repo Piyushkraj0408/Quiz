@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h2 id="quizTitle">Quiz</h2>
+        <div id="quizContent"></div>
+        <button id="submitBtn" class="hidden" onclick="submitQuiz()">Submit Quiz</button>
+
+        <div id="resultSection" class="hidden">
+            <h3>Your Score: <span id="scoreDisplay">0</span> / <span id="totalQ">0</span></h3>
+            <button onclick="retryQuiz()">Retry</button>
+            <button onclick="closeQuiz()">Choose New Role</button>
+        </div>
+    </div>
+    <script src="quiz.js"></script>
+</body>
+</html>

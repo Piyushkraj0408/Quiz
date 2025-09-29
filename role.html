@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Role</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .role-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; 
+            margin-top: 25px;
+        }
+
+        .role-buttons button {
+            padding: 20px 25px;
+            font-size: 17px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff; 
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+            margin: 0; 
+            text-align: left; 
+        }
+
+        .role-buttons button:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.3); 
+        }
+        
+        @media (min-width: 600px) {
+            .role-buttons {
+                flex-direction: row;
+                flex-wrap: wrap; 
+                justify-content: center;
+            }
+            .role-buttons button {
+                flex: 1 1 auto;
+                max-width: 30%; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Who Are You?</h2>
+        <div class="role-buttons">
+            <button onclick="chooseRole('student')">Student</button>
+            <button onclick="chooseRole('professional')">Professional</button>
+            <button onclick="chooseRole('college')">College Student</button>
+        </div>
+    </div>
+    <script>
+        function chooseRole(role) {
+            localStorage.setItem("role", role);
+
+            if (role === 'student') {
+                window.location.href = "student_class.html";
+            } else if (role === 'college') {
+                window.location.href = "college.html";
+            } else if (role === 'professional') {
+                localStorage.setItem("apiDifficulty", "hard");
+                localStorage.setItem("apiCategory", "18");
+                window.location.href = "quiz.html";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Your Class</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .class-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .class-grid button {
+            padding: 25px 15px;
+            font-size: 16px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+            margin: 0;
+        }
+
+        .class-grid button:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Select Your Class</h2>
+        <div class="class-grid">
+            <button onclick="startStudentQuiz(1)">Class 1</button>
+            <button onclick="startStudentQuiz(2)">Class 2</button>
+            <button onclick="startStudentQuiz(3)">Class 3</button>
+            <button onclick="startStudentQuiz(4)">Class 4</button>
+            <button onclick="startStudentQuiz(5)">Class 5</button>
+            <button onclick="startStudentQuiz(6)">Class 6</button>
+            <button onclick="startStudentQuiz(7)">Class 7</button>
+            <button onclick="startStudentQuiz(8)">Class 8</button>
+            <button onclick="startStudentQuiz(9)">Class 9</button>
+            <button onclick="startStudentQuiz(10)">Class 10</button>
+            <button onclick="startStudentQuiz(11)">Class 11</button>
+            <button onclick="startStudentQuiz(12)">Class 12</button>
+        </div>
+    </div>
+
+    <script>
+        function startStudentQuiz(classNum) {
+            let difficulty = '';
+            let categoryId = '';
+
+            if (classNum <= 5) {
+                difficulty = 'easy';
+                categoryId = '9';
+            } else if (classNum <= 8) {
+                difficulty = 'medium';
+                categoryId = '17';
+            } else {
+                difficulty = 'hard';
+                categoryId = '23';
+            }
+
+            localStorage.setItem("apiDifficulty", difficulty);
+            localStorage.setItem("apiCategory", categoryId);
+            window.location.href = "quiz.html";
+        }
+    </script>
+</body>
+</html>
