@@ -1,10 +1,16 @@
 let quizData = [];
 let score = 0;
+let currentQuestionIndex = 0;
+let timerInterval;
+let timeLeft = 20;
 
+// --- DOM ELEMENTS ---
 const quizContent = document.getElementById("quizContent");
-const submitBtn = document.getElementById("submitBtn");
+const nextBtn = document.getElementById("nextBtn");
 const resultSection = document.getElementById("resultSection");
 const scoreDisplay = document.getElementById("scoreDisplay");
+const timerDisplay = document.getElementById("timerDisplay");
+const submitBtn = document.getElementById("submitBtn");
 const totalQDisplay = document.getElementById("totalQ");
 
 async function fetchQuiz() {
@@ -12,7 +18,9 @@ async function fetchQuiz() {
     const categoryId = localStorage.getItem("apiCategory") || '9';
 
     quizContent.innerHTML = "<p>Loading Quiz...</p>";
-    submitBtn.classList.add("hidden");
+    if (submitBtn) submitBtn.classList.add("hidden"); // Defensive check for submitBtn
+    resultSection.classList.add("hidden");
+
 
     const url = `https://opentdb.com/api.php?amount=10&category=${categoryId}&difficulty=${difficulty}&type=multiple`;
 
@@ -31,74 +39,132 @@ async function fetchQuiz() {
             return {
                 question: item.question,
                 options: shuffledOptions,
-                answer: shuffledOptions.indexOf(item.correct_answer),
+                // ✅ BUG FIX: Store the actual text of the correct answer, not its index.
+                answer: item.correct_answer,
                 selected: null
             };
         });
-
-        renderQuiz();
+        
+        // Reset state for a new quiz
+        currentQuestionIndex = 0;
+        score = 0;
+        totalQDisplay.innerText = quizData.length;
+        showQuestion();
 
     } catch (err) {
         console.error("Error loading quiz:", err);
-        quizContent.innerHTML = "<p>Failed to load quiz. Please try a different category or role.</p>";
-        submitBtn.classList.add("hidden");
+        quizContent.innerHTML = `<p><b>Failed to load quiz.</b><br>${err.message}<br>Please try a different category or difficulty.</p>`;
+        if (submitBtn) submitBtn.classList.add("hidden");
     }
 }
 
-function renderQuiz() {
-    quizContent.innerHTML = "";
-    quizData.forEach((item, questionIndex) => {
-        const questionDiv = document.createElement("div");
-        
-        const questionText = document.createElement('p');
-        questionText.innerHTML = `<b>Q${questionIndex + 1}:</b> ${item.question}`;
-        questionDiv.appendChild(questionText);
+function showQuestion() {
+    if (currentQuestionIndex >= quizData.length) {
+        endQuiz();
+        return;
+    }
 
-        item.options.forEach((opt, optionIndex) => {
-            const optionEl = document.createElement("div");
-            optionEl.className = "quiz-option";
-            optionEl.innerHTML = opt;
-            optionEl.onclick = () => selectAnswer(questionIndex, optionIndex, optionEl);
-            questionDiv.appendChild(optionEl);
-        });
-        quizContent.appendChild(questionDiv);
+    const currentQuestion = quizData[currentQuestionIndex];
+    quizContent.innerHTML = "";
+    const questionDiv = document.createElement("div");
+
+    const questionText = document.createElement('p');
+    questionText.innerHTML = `<b>Q${currentQuestionIndex + 1}:</b> ${currentQuestion.question}`;
+    questionDiv.appendChild(questionText);
+
+    currentQuestion.options.forEach(opt => {
+        const optionEl = document.createElement("button");
+        optionEl.className = "quiz-option";
+        optionEl.innerHTML = opt;
+        // Now this passes the correct data types for comparison
+        optionEl.onclick = () => selectAnswer(optionEl, opt, currentQuestion.answer);
+        questionDiv.appendChild(optionEl);
     });
 
-    resultSection.classList.add("hidden");
-    submitBtn.classList.remove("hidden");
+    quizContent.appendChild(questionDiv);
+    nextBtn.classList.add("hidden");
+
+    resetTimer();
+    startTimer();
 }
 
-function selectAnswer(questionIndex, optionIndex, selectedElement) {
-    quizData[questionIndex].selected = optionIndex;
-    const siblings = selectedElement.parentNode.querySelectorAll(".quiz-option");
-    siblings.forEach(sibling => sibling.style.background = "");
-    selectedElement.style.background = "#d1e7dd";
+function selectAnswer(selectedElement, selectedOption, correctAnswer) {
+    clearInterval(timerInterval);
+
+    const allOptions = quizContent.querySelectorAll(".quiz-option");
+    allOptions.forEach(btn => btn.disabled = true);
+
+    // This comparison now works correctly (e.g., "Paris" === "Paris")
+    if (selectedOption === correctAnswer) {
+        selectedElement.classList.add("correct");
+        score++;
+    } else {
+        selectedElement.classList.add("incorrect");
+        allOptions.forEach(btn => {
+            if (btn.innerHTML === correctAnswer) {
+                btn.classList.add("correct");
+            }
+        });
+    }
+    
+    nextBtn.classList.remove("hidden");
 }
 
-function submitQuiz() {
-    score = 0;
-    quizData.forEach(q => {
-        if (q.selected === q.answer) {
-            score++;
+function moveToNextQuestion() {
+    currentQuestionIndex++;
+    showQuestion();
+}
+
+function resetTimer() {
+    clearInterval(timerInterval);
+    timeLeft = 20;
+    timerDisplay.innerText = `Time Left: ${timeLeft}s`;
+}
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timerDisplay.innerText = `Time Left: ${timeLeft}s`;
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            handleTimeOut();
+        }
+    }, 1000);
+}
+
+function handleTimeOut() {
+    // This logic now works correctly because it's comparing text with text
+    const correctAnswer = quizData[currentQuestionIndex].answer;
+    const allOptions = quizContent.querySelectorAll(".quiz-option");
+    
+    allOptions.forEach(btn => {
+        btn.disabled = true;
+        if (btn.innerHTML === correctAnswer) {
+            btn.classList.add("correct");
         }
     });
-
-    scoreDisplay.innerText = score;
-    totalQDisplay.innerText = quizData.length;
-
-    resultSection.classList.remove("hidden");
-    submitBtn.classList.add("hidden");
-    quizContent.innerHTML = "";
+    nextBtn.classList.remove("hidden");
 }
 
+function endQuiz() {
+    quizContent.innerHTML = "<h2>Quiz Finished! 🎉</h2>";
+    resultSection.classList.remove("hidden");
+    scoreDisplay.innerText = score;
+    nextBtn.classList.add("hidden");
+    timerDisplay.innerText = "";
+}
+
+// Initializer and event listener
+nextBtn.onclick = moveToNextQuestion;
+window.onload = fetchQuiz;
+
 function retryQuiz() {
+    // This will re-fetch the questions and reset the quiz state.
     fetchQuiz();
 }
 
 function closeQuiz() {
+    // This will send the user back to the home/selection page.
+    // IMPORTANT: Make sure "index.html" is the correct name of your file.
     window.location.href = "role.html";
 }
-
-window.onload = function() {
-    fetchQuiz();
-};
